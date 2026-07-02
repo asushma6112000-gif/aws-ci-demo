@@ -1,5 +1,10 @@
 version: 0.2
 
+env:
+  parameter-store:
+    DOCKER_USERNAME: "/myapp/docker-credentials/username"
+    DOCKER_TOKEN: "/myapp/docker-credentials/token"
+
 phases:
   install:
     runtime-versions:
@@ -7,14 +12,23 @@ phases:
 
   pre_build:
     commands:
-      - echo "Installing dependencies"
+      - echo "Installing dependencies..."
       - pip install -r requirements.txt
+
+      - echo "Logging in to Docker Hub..."
+      - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - IMAGE_NAME="$DOCKER_USERNAME/aws-ci-demo"
+      - IMAGE_TAG="latest"
 
   build:
     commands:
-      - echo "Building Docker image"
-      - docker build -t aws-ci-demo .
+      - echo "Building Docker image..."
+      - docker build -t $IMAGE_NAME:$IMAGE_TAG .
 
   post_build:
     commands:
+      - echo "Pushing Docker image to Docker Hub..."
+      - docker push $IMAGE_NAME:$IMAGE_TAG
+
       - echo "Build completed successfully"
