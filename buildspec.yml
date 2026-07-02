@@ -14,11 +14,9 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - pip install -r requirements.txt
-
       - echo "Logging in to Docker Hub..."
       - echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
-      - IMAGE_NAME="$DOCKER_USERNAME/aws-ci-demo"
+      - IMAGE_NAME="$"sushmadevops2026/aws-ci-demo"
       - IMAGE_TAG="latest"
 
   build:
@@ -30,5 +28,10 @@ phases:
     commands:
       - echo "Pushing Docker image to Docker Hub..."
       - docker push $IMAGE_NAME:$IMAGE_TAG
-
+      - echo "Creating imagedefinitions.json..."
+      - printf '[{"name":"aws-ci-container"","imageUri":"%s"}]' $IMAGE_NAME:$IMAGE_TAG > imagedefinitions.json
       - echo "Build completed successfully"
+
+artifacts:
+  files:
+    - imagedefinitions.json
