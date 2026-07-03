@@ -21,11 +21,10 @@ phases:
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
 
   post_build:
-    commands:
-      - echo Pushing Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
-      - echo Build completed successfully
+  commands:
+    - echo Writing imagedefinitions.json
+    - printf '[{"name":"aws-ci-demo-container","imageUri":"%s"}]' $IMAGE_URI > imagedefinitions.json
 
 artifacts:
   files:
-    - '**/*'
+    - imagedefinitions.json
