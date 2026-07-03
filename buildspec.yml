@@ -9,16 +9,15 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 911788523412.dkr.ecr.us-east-1.amazonaws.com
 
-      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REPOSITORY_NAME
+      - REPOSITORY_URI=911788523412.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_NAME
       - IMAGE_URI=$REPOSITORY_URI:$IMAGE_TAG
 
   build:
     commands:
       - echo Building Docker image...
       - docker build -t $REPOSITORY_NAME:$IMAGE_TAG .
-
       - docker tag $REPOSITORY_NAME:$IMAGE_TAG $IMAGE_URI
 
   post_build:
