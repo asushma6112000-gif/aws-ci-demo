@@ -5,7 +5,7 @@
 This project demonstrates a complete CI/CD pipeline using AWS services.  
 A simple Flask application was containerized using Docker and automatically deployed to Amazon ECS using AWS CodePipeline and AWS CodeBuild.
 
-The project was later upgraded by integrating an Application Load Balancer (ALB), ECS Auto Scaling, and Amazon CloudWatch monitoring to improve application availability, scalability, and observability.
+The project was enchanced by integrating an Application Load Balancer (ALB), ECS Auto Scaling, and Amazon CloudWatch monitoring to improve application availability, scalability, and observability.
 
 The goal of this project was to understand end-to-end CI/CD workflow, Docker deployment, ECS service deployment, ALB integration, Auto Scaling configuration, CloudWatch monitoring, and troubleshooting real AWS deployment issues.
 
