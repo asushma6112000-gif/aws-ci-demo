@@ -29,15 +29,14 @@ Docker Image Build
 ↓  
 Amazon ECR  
 ↓  
-Amazon ECS Service  
+Amazon ECS (Fargate) 
 ↓  
-CloudWatch Monitoring  
+Application Load Balancer (ALB)
 ↓  
-Auto Scaling Policy  
-↓  
-Application Load Balancer (HTTP:80)  
-↓  
-Flask Application
+Users Access Flask Application
+↓
+cloudWatch Monitoring -> ECS Service Auto
+Scaling -> Scale In / Scale Out ECS Tasks
 
 ---
 
