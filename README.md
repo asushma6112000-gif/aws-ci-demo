@@ -32,9 +32,11 @@ Amazon ECR
 Amazon ECS (Fargate) 
 ↓  
 Application Load Balancer (ALB)
-↓  
+↓ 
+
 Users Access Flask Application
 ↓
+
 cloudWatch Monitoring -> ECS Service Auto
 Scaling -> Scale In / Scale Out ECS Tasks
 
