@@ -18,9 +18,9 @@ The objective of this project was to gain hands-on experience in building an end
 
 ___
 
-##Architecture Flow
+## Architecture Flow
 
-Develeper Push Code
+Developer Push Code  
 → GitHub Repository  
 → AWS CodePipeline  
 → AWS CodeBuild  
@@ -28,7 +28,7 @@ Develeper Push Code
 → Amazon ECR  
 → Amazon ECS Service (Launch Type: AWS Fargate)  
 → Application Load Balancer (HTTP:80)  
-→ Flask Application
+→ Flask Application  
 
 ### Monitoring & Auto Scaling
 
@@ -132,32 +132,26 @@ The application is containerized using Docker.
 ## AWS Services Used
 
 ### AWS CodePipeline
-
-Automates the complete CI/CD workflow.
+Automates the complete CI/CD workflow from source to deployment.
 
 ### AWS CodeBuild
+Builds the Docker image using `buildspec.yml` and prepares deployment artifacts.
 
-Builds Docker images and pushes them to Amazon ECR.
+### Amazon ECR (Elastic Container Registry)
+Stores Docker container images securely and provides versioned image management.
 
-### Amazon ECR
-
-Stores Docker images securely.
-
-### Amazon ECS
-
-Runs the containerized Flask application.
+### Amazon ECS (Elastic Container Service - Fargate)
+Runs the containerized Flask application without managing servers.
 
 ### Application Load Balancer (ALB)
-
-Distributes incoming traffic across healthy ECS tasks.
+Distributes incoming HTTP traffic across healthy ECS tasks and ensures high availability.
 
 ### Amazon CloudWatch
+Collects logs, monitors ECS CPU/memory metrics, and provides observability for the application.
 
-Collects application logs and monitors ECS metrics.
+### ECS Auto Scaling (Application Auto Scaling)
+Automatically scales ECS tasks based on CloudWatch metrics such as CPU utilization to handle load efficiently.
 
-### ECS Auto Scaling
-
-Automatically scales ECS tasks based on CPU utilization.
 
 ---
 
