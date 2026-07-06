@@ -2,40 +2,38 @@
 
 ## Project Overview
 
-This project demonstrates a complete CI/CD pipeline using AWS services.  
+This project demonstrates a complete CI/CD pipeline using AWS services.
+
 A simple Flask application was containerized using Docker and automatically deployed to Amazon ECS using AWS CodePipeline and AWS CodeBuild.
 
-The project was enchanced by integrating an Application Load Balancer (ALB), ECS Auto Scaling, and Amazon CloudWatch monitoring to improve application availability, scalability, and observability.
+The project was enhanced by integrating an Application Load Balancer (ALB), Amazon CloudWatch monitoring, and ECS Auto Scaling to improve application availability, scalability, and observability.
 
-The goal of this project was to understand end-to-end CI/CD workflow, Docker deployment, ECS service deployment, ALB integration, Auto Scaling configuration, CloudWatch monitoring, and troubleshooting real AWS deployment issues.
-
-## Architecture Diagram
-
-![Architecture Diagram](screenshots/aws-cicd-architecture.png)
+The objective of this project was to gain hands-on experience in building an end-to-end CI/CD pipeline, containerizing applications with Docker, deploying applications on Amazon ECS, configuring an Application Load Balancer, implementing CloudWatch monitoring, enabling ECS Auto Scaling, and troubleshooting real-world AWS deployment issues.
 
 ---
 
-## Architecture Flow
+## Architecture Diagram
 
-Developer Push Code  
-↓  
-GitHub Repository  
-↓  
-AWS CodePipeline  
-↓  
-AWS CodeBuild  
-↓  
-Docker Image Build  
-↓  
-Amazon ECR  
-↓  
-Amazon ECS (Fargate)  
-↓  
-Application Load Balancer (ALB)  
-↓  
-Users Access Flask Application  
-↓  
-Amazon CloudWatch Monitoring → ECS Service Auto Scaling → Scale In / Scale Out ECS Tasks
+![Architecture Diagram](aws-cicd-architecture.png)
+
+___
+
+##Architecture Flow
+
+Develeper Push Code
+→ GitHub Repository  
+→ AWS CodePipeline  
+→ AWS CodeBuild  
+→ Docker Image Build  
+→ Amazon ECR  
+→ Amazon ECS Service (Launch Type: AWS Fargate)  
+→ Application Load Balancer (HTTP:80)  
+→ Flask Application
+
+### Monitoring & Auto Scaling
+
+Amazon CloudWatch  
+→ ECS Auto Scaling
 
 ---
 
@@ -51,65 +49,67 @@ Amazon CloudWatch Monitoring → ECS Service Auto Scaling → Scale In / Scale O
 - Amazon ECS
 - Application Load Balancer (ALB)
 - Amazon CloudWatch
-- Auto Scaling
+- ECS Auto Scaling
 
 ---
 
 ## Deployment Workflow
 
-1. Developer pushes source code changes to GitHub
-2. AWS CodePipeline automatically detects repository changes
-3. Source artifact is sent to AWS CodeBuild
-4. CodeBuild executes instructions from `buildspec.yml`
-5. Docker image is built from the Flask application
-6. Docker image is tagged and pushed to Amazon ECR
-7. `imagedefinitions.json` artifact is generated
-8. Amazon ECS service receives the new image definition
-9. ECS launches new task revision
-10. CloudWatch monitors ECS metrics
-11. Auto Scaling adjusts task count based on workload
-12. Application Load Balancer routes traffic to healthy ECS tasks
-13. Application becomes accessible through ALB DNS
+1. Developer pushes code to GitHub.
+2. CodePipeline detects changes automatically.
+3. Source code is sent to CodeBuild.
+4. CodeBuild executes the buildspec.yml file.
+5. Docker image is built.
+6. Docker image is tagged.
+7. Docker image is pushed to Amazon ECR.
+8. imagedefinitions.json is generated.
+9. Amazon ECS deploys the latest container image.
+10. CloudWatch collects logs and metrics.
+11. ECS Auto Scaling adjusts the number of running tasks.
+12. Application Load Balancer routes traffic to healthy ECS tasks.
+13. Users access the application using the ALB DNS endpoint.
 
 ---
 
 ## Buildspec Workflow
 
-The build process is defined inside `buildspec.yml`.
+The CI/CD build process is defined in **buildspec.yml**.
 
-### pre_build
+### Pre Build
 
-- Authenticate Docker with Amazon ECR using AWS CLI
-- Set repository URI and image tag
-- Prepare environment variables required for build
+- Authenticate Docker with Amazon ECR
+- Configure repository URI
+- Configure image tag
+- Prepare environment variables
 
-### build
+### Build
 
-- Build Docker image from Dockerfile
-- Tag Docker image with latest tag
+- Build Docker image
+- Tag Docker image
 
-### post_build
+### Post Build
 
 - Push Docker image to Amazon ECR
-- Generate `imagedefinitions.json`
-- Export build artifact for ECS deployment
+- Generate imagedefinitions.json
+- Export deployment artifact
 
 ---
 
 ## Project Structure
 
-```bash
+```text
 .
 ├── app.py
 ├── Dockerfile
 ├── requirements.txt
 ├── buildspec.yml
-├── architecture-diagram.png
+├── aws-cicd-architecture.png
 ├── screenshots/
 │   ├── pipeline-success.png
 │   ├── deploy-troubleshooting.png
-│   ├── ecs-running-app.png
-│   └── alb-dns-running-app.png
+│   ├── alb-dns-running-app.png
+│   ├── cloudwatch-flask-app-logs.png
+│   └── ecs-autoscaling.png
 └── README.md
 ```
 
@@ -121,64 +121,77 @@ The application is containerized using Docker.
 
 ### Dockerfile Responsibilities
 
-- Use Python base image
-- Copy application files
-- Install dependencies
-- Expose application port
-- Run Flask application
+- Uses Python base image
+- Copies application files
+- Installs dependencies
+- Exposes application port
+- Starts the Flask application
 
 ---
 
 ## AWS Services Used
 
 ### AWS CodePipeline
+
 Automates the complete CI/CD workflow.
 
 ### AWS CodeBuild
+
 Builds Docker images and pushes them to Amazon ECR.
 
 ### Amazon ECR
-Stores Docker container images securely.
+
+Stores Docker images securely.
 
 ### Amazon ECS
+
 Runs the containerized Flask application.
 
 ### Application Load Balancer (ALB)
-Distributes incoming traffic and routes requests to healthy ECS tasks.
+
+Distributes incoming traffic across healthy ECS tasks.
 
 ### Amazon CloudWatch
-Monitors ECS CPU and memory metrics and triggers alarms.
 
-### Auto Scaling
-Automatically increases or decreases ECS task count based on CloudWatch metrics.
+Collects application logs and monitors ECS metrics.
+
+### ECS Auto Scaling
+
+Automatically scales ECS tasks based on CPU utilization.
 
 ---
 
 ## Troubleshooting & Fixes
 
-### 1. Source Provider Configuration Issue
+### 1. GitHub Source Configuration Issue
 
-**Issue:**  
+**Issue**
+
 GitHub Version 2 was not visible during pipeline creation.
 
-**Fix:**  
-Used GitHub connection via GitHub App / CodeConnections.
+**Fix**
 
-**Result:**  
-Source stage was configured successfully.
+Configured GitHub connection using AWS CodeConnections.
+
+**Result**
+
+Pipeline source stage was successfully configured.
 
 ---
 
 ### 2. Deploy Stage Failed
 
-**Issue:**  
-Source and Build stages succeeded, but Deploy stage failed.
+**Issue**
 
-**Root Cause:**  
-Container name inside `imagedefinitions.json` did not match ECS task definition.
+Source and Build stages completed successfully but Deploy stage failed.
 
-**Fix:**  
-Updated container name to match ECS exactly.
+**Root Cause**
+
+The container name inside `imagedefinitions.json` did not match the ECS task definition.
+
+**Fix**
+
+Updated the container name inside `imagedefinitions.json` to match the ECS task definition.
 
 Example:
 
@@ -191,108 +204,80 @@ Example:
 ]
 ```
 
-**Result:**  
-Deployment moved forward successfully.
+**Result**
+
+Deployment completed successfully.
 
 ---
 
 ### 3. ECR Repository Configuration Issue
 
-**Issue:**  
+**Issue**
+
 Confusion while adding the correct Amazon ECR repository URI in `buildspec.yml`.
 
-**Fix:**  
-Configured correct ECR repository URI and image tagging.
+**Fix**
 
-**Result:**  
-Docker image pushed successfully to Amazon ECR.
+Configured the correct Amazon ECR repository URI and image tagging.
 
----
+**Result**
 
-### 4. Deploy Stage Took Long Time
-
-**Issue:**  
-Deploy stage remained in progress for several minutes.
-
-**Root Cause:**  
-Amazon ECS waits for the new task to become healthy and service to reach steady state.
-
-**Fix:**  
-
-- Verified ECS task status = RUNNING
-- Checked deployment status
-- Reviewed ECS service events
-
-**Result:**  
-Deployment completed successfully.
+Docker image was successfully pushed to Amazon ECR.
 
 ---
 
-### 5. Application Accessibility Verification
+### 4. Deploy Stage Took Longer Than Expected
 
-**Issue:**  
-Needed to verify whether Flask application was accessible.
+**Issue**
 
-**Fix:**  
+The Deploy stage remained in progress for several minutes.
 
-- Security group allowed inbound traffic on port 5000
-- Flask application listens on:
+**Root Cause**
 
-```python
-app.run(host="0.0.0.0", port=5000)
-```
+Amazon ECS waits for the new task to become healthy and for the service to reach a steady state before completing the deployment.
 
-**Result:**  
-Application became accessible via ECS public IP.
+**Fix**
+
+- Verified ECS task status was **RUNNING**
+- Checked ECS service events
+- Confirmed deployment status
+
+**Result**
+
+Deployment completed successfully after the service reached a steady state.
 
 ---
 
-### 6. Application Load Balancer Access Issue
+### 5. Application Load Balancer Access Issue
 
-**Issue:**  
-Application was not accessible through ALB DNS.
+**Issue**
 
-**Root Cause:**  
-HTTP port 80 traffic was blocked by ALB Security Group.
+The application was not accessible using the ALB DNS endpoint.
 
-**Fix:**  
+**Root Cause**
 
-- Allowed inbound HTTP traffic on port 80 from `0.0.0.0/0`
+The ALB Security Group did not allow inbound HTTP traffic on port 80.
+
+**Fix**
+
+- Allowed inbound HTTP (port 80) from `0.0.0.0/0`
 - Verified ALB listener configuration
-- Verified target group health checks
+- Verified target group health
 - Confirmed ECS tasks were healthy
 
-**Result:**  
-Application became accessible successfully through ALB DNS.
+**Result**
 
----
-
-### 7. Auto Scaling Configuration Issue
-
-**Issue:**  
-Scaling policy was not triggering initially.
-
-**Root Cause:**  
-CloudWatch alarm and scaling policy were not properly attached to ECS service.
-
-**Fix:**  
-
-- Configured ECS Service Auto Scaling
-- Set minimum and maximum task count
-- Attached CloudWatch CPU utilization alarm
-
-**Result:**  
-Auto Scaling successfully adjusted task count based on workload.
+The application became accessible through the ALB DNS endpoint.
 
 ---
 
 ## Application Access
 
-Application was successfully accessible through Application Load Balancer DNS.
+The application was successfully accessed using the Application Load Balancer DNS.
 
 Example:
 
-```bash
+```text
 http://<alb-dns-name>
 ```
 
@@ -301,40 +286,48 @@ http://<alb-dns-name>
 ## Screenshots
 
 ### Pipeline Success
+
 ![Pipeline Success](screenshots/pipeline-success.png)
 
 ### Deployment Troubleshooting
+
 ![Deployment Troubleshooting](screenshots/deploy-troubleshooting.png)
 
-### ECS Public IP Running Application
-![ECS Running App](screenshots/ecs-running-app.png)
-
 ### ALB DNS Running Application
+
 ![ALB DNS Running App](screenshots/alb-dns-running-app.png)
+
+### CloudWatch Flask Logs
+
+![CloudWatch Flask Logs](screenshots/cloudwatch-flask-app-logs.png)
+
+### ECS Auto Scaling
+
+![ECS Auto Scaling](screenshots/ecs-autoscaling.png)
 
 ---
 
 ## Key Learnings
 
-- Built end-to-end AWS CI/CD pipeline
-- Learned Docker image creation and deployment
-- Understood Amazon ECR and ECS integration
-- Practiced debugging real AWS deployment issues
-- Learned ALB configuration and networking troubleshooting
-- Learned CloudWatch monitoring and alerting
-- Configured ECS Auto Scaling policies
-- Gained hands-on DevOps troubleshooting experience
+- Built an end-to-end AWS CI/CD pipeline.
+- Containerized applications using Docker.
+- Deployed applications on Amazon ECS.
+- Integrated Amazon ECR with ECS.
+- Configured an Application Load Balancer.
+- Implemented CloudWatch monitoring.
+- Configured ECS Auto Scaling.
+- Gained hands-on experience troubleshooting AWS deployment issues.
 
 ---
 
 ## Future Improvements
 
-- Enable HTTPS using ACM
-- Configure custom domain with Route 53
-- Add Blue/Green deployment strategy
+- Enable HTTPS using AWS Certificate Manager (ACM)
+- Configure a custom domain with Amazon Route 53
+- Implement Blue/Green deployments using CodeDeploy
 
 ---
 
 ## Project Status
 
-Project completed successfully.
+**Project completed successfully.**
