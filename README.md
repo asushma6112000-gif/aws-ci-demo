@@ -14,7 +14,7 @@ The objective of this project was to gain hands-on experience in building an end
 
 ## Architecture Diagram
 
-![Architecture Diagram](aws-cicd-architecture.png)
+![Architecture](screenshots/aws-cicd-architecture.png)
 
 ___
 
@@ -283,25 +283,33 @@ http://<alb-dns-name>
 
 ---
 
-## Screenshots
+##Screenshots
 
-### Pipeline Success
+## Pipeline Success
 
 ![Pipeline Success](screenshots/pipeline-success.png)
 
-### Deployment Troubleshooting
+---
 
-![Deployment Troubleshooting](screenshots/deploy-troubleshooting.png)
+## Deployment Troubleshooting
 
-### ALB DNS Running Application
+![Deploy Troubleshooting](screenshots/deploy-troubleshooting.png)
+
+---
+
+## ALB Running Application
 
 ![ALB DNS Running App](screenshots/alb-dns-running-app.png)
 
-### CloudWatch Flask Logs
+---
 
-![CloudWatch Flask Logs](screenshots/cloudwatch-flask-app-logs.png)
+## CloudWatch Logs (Flask App)
 
-### ECS Auto Scaling
+![CloudWatch Logs](screenshots/cloudwatch-flask-app-logs.png)
+
+---
+
+## ECS Auto Scaling
 
 ![ECS Auto Scaling](screenshots/ecs-autoscaling.png)
 
